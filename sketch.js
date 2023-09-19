@@ -1,27 +1,33 @@
+//switch between random shapes art and patterns
 let currentMenu = 0;
+//open random shape menu once
+let rsMenuPressed = false;
+//open pattern menu once
+let patternMenuPressed = false;
 
-
-
-//pattern menu variables
 //
-
-
-
-
 //random shapes menu variables
 //
+
 //an array with shapes
-let shapes = ['rect', 'circle', 'triangle'];
+const shapes = ['rect', 'circle', 'triangle'];
+const blendModeNames = ['BLEND', 'DARKEST', 'LIGHTEST', 'OVERLAY', 'HARD_LIGHT', 'SOFT_LIGHT'];
+let buttons = [];
+
 //the amount of shapes placed in one canvas
 let depth = 1000;
+
 //background color
 let backgroundColor = 120;
+
 //the current mode of how to blend shapes
 let currentBlendMode = 'BLEND';
+
 //depth input field
 //strokeWeight input field
 let depthInput;
 let sWInput;
+
 //check if canvas is empty
 let emptyCanvas = true;
 
@@ -44,81 +50,68 @@ function setup() {
   button = createButton('Pattern');
   button.position(850, 57);
   button.size(300, 40);
-  button.mousePressed(patternMenuButtons);
+  button.mousePressed(patternMenu);
 
   randomShapesMenuButtons();
 }
 
 function randomShapesMenuButtons()
 {
-  background(backgroundColor);
+  //make sure to do once
+  if(rsMenuPressed == false)
+  {
+    background(backgroundColor);
 
-  //create depth input field
-  depthInput = createInput('1000');
-  depthInput.position(98, 88);
-  depthInput.size(33);
+    //create depth input field
+    depthInput = createInput('1000');
+    depthInput.position(98, 88);
+    depthInput.size(33);
+  
+    //create stroke weight input field
+    sWInput = createInput('1');
+    sWInput.position(98, 144);
+    sWInput.size(33);
 
-  //create stroke weight input field
-  sWInput = createInput('1');
-  sWInput.position(98, 144);
-  sWInput.size(33);
+    //loop that creates blend mode buttons. Puts them in an array
+    for(let i = 0; i < blendModeNames.length; i++)
+    {
+      buttons[i] = createButton(blendModeNames[i]).position(64, 200 + 20 * i).size(100).mousePressed(function() { changeBlendModes(i);});
+    }
+  
+    //set current menu to random shapes menu
+    currentMenu = 0;
 
-
-  //blendMode buttons
-
-  //button BLEND
-  buttonBLEND = createButton('BLEND');
-  buttonBLEND.position(64, 200);
-  buttonBLEND.size(100);
-  buttonBLEND.mousePressed(changeBLEND);
-
-  //button DARKEST
-  buttonDARKEST = createButton('DARKEST');
-  buttonDARKEST.position(64, 240);
-  buttonDARKEST.size(100);
-  buttonDARKEST.mousePressed(changeDARKEST);
-
-  //button LIGHTEST
-  buttonLIGHTEST = createButton('LIGHTEST');
-  buttonLIGHTEST.position(64, 280);
-  buttonLIGHTEST.size(100);
-  buttonLIGHTEST.mousePressed(changeLIGHTEST);
-
-  //button OVERLAY
-  buttonOVERLAY = createButton('OVERLAY');
-  buttonOVERLAY.position(64, 320);
-  buttonOVERLAY.size(100);
-  buttonOVERLAY.mousePressed(changeOVERLAY);
-
-  //button HARD_LIGHT
-  buttonHARD_LIGHT = createButton('HARD_LIGHT');
-  buttonHARD_LIGHT.position(64, 320);
-  buttonHARD_LIGHT.size(100);
-  buttonHARD_LIGHT.mousePressed(changeHARD_LIGHT);
-
-  //button SOFT_LIGHT
-  buttonSOFT_LIGHT = createButton('SOFT_LIGHT');
-  buttonSOFT_LIGHT.position(64, 360);
-  buttonSOFT_LIGHT.size(100);
-  buttonSOFT_LIGHT.mousePressed(changeSOFT_LIGHT);
-
-  currentMenu = 0;
+    //make sure to open menu once
+    rsMenuPressed = true;
+    patternMenuPressed = false;
+  }
 }
 
-function patternMenuButtons()
+//function that removes random shape menu for pattern menu
+function patternMenu()
 {
-  background(backgroundColor);
+  //make sure to do once
+  if(patternMenuPressed == false)
+  {
+    background(backgroundColor);
 
-  buttonBLEND.remove();
-  buttonDARKEST.remove();
-  buttonLIGHTEST.remove();
-  buttonOVERLAY.remove();
-  buttonHARD_LIGHT.remove();
-  buttonSOFT_LIGHT.remove();
-  depthInput.remove();
-  sWInput.remove();
+    //loop that removes buttons
+    for(let i = 0; i < blendModeNames.length; i++)
+    {
+      buttons[i].remove();
+    }
 
-  currentMenu = 1;
+    //remove input fields
+    depthInput.remove();
+    sWInput.remove();
+  
+    //set current menu to pattern menu
+    currentMenu = 1;
+
+    //make sure to open menu once
+    rsMenuPressed = false;
+    patternMenuPressed = true;
+  }
 }
 
 //draw, played every frame
@@ -133,8 +126,15 @@ function draw()
   //depth variable is depth input field value
   depth = depthInput.value();
 
-  //create menu
-  menu();
+  //display current menu
+  if(currentMenu == 0)
+  {
+    randomShapesMenu();
+  }
+  else 
+  {
+    patternMenu();
+  }
 }
 
 
@@ -158,8 +158,10 @@ function keyPressed() {
   }
 }
 
-function menu()
+//randomShapesMenu, played when called in draw
+function randomShapesMenu()
 {
+  rectMode(CORNER);
   //set blendMode to 'BLEND'
   blendMode(BLEND);
   //set color as a type of grey(120)
@@ -173,19 +175,6 @@ function menu()
   rect(200, 560, 1300, 40);
   rect(1460, 40, 40, 520);
 
-  if(currentMenu == 0)
-  {
-    randomShapesMenu();
-  }
-  else if(currentMenu == 1)
-  {
-    patternMenu();
-  }
-}
-
-//randomShapesMenu, played when called in draw
-function randomShapesMenu()
-{
   //set color as type of grey(50)
   fill(50);
   //set text size
@@ -212,67 +201,51 @@ function randomShapesMenu()
   textSize(28);
 }
 
-function patternMenu()
-{
-  
-}
-
 //functions setting blend modes
 //reset canvas by layering a new background on top
 //set blendMode
 //set the variable checking if the canvas is empty to true
 
-//BLEND
-function changeBLEND()
+//change blend mode function
+function changeBlendModes(whatBlendMode)
 {
   background(backgroundColor);
-  currentBlendMode = 'BLEND';
-  emptyCanvas = true;
-}
 
-//DARKEST
-function changeDARKEST()
-{
-  background(backgroundColor);
-  currentBlendMode = 'DARKEST';
-  emptyCanvas = true;
-}
-
-//LIGHTEST
-function changeLIGHTEST()
-{
-  background(backgroundColor);
-  currentBlendMode = 'LIGHTEST';
-  emptyCanvas = true;
-}
-
-//OVERLAY
-function changeOVERLAY()
-{
-  background(backgroundColor);
-  currentBlendMode = 'OVERLAY';
-  emptyCanvas = true;
-}
-
-//HARD_LIGHT
-function changeHARD_LIGHT()
-{
-  background(backgroundColor);
-  currentBlendMode = 'HARD_LIGHT';
-  emptyCanvas = true;
-}
-
-//SOFT_LIGHT
-function changeSOFT_LIGHT()
-{
-  background(backgroundColor);
-  currentBlendMode = 'SOFT_LIGHT';
+  //if 0 change to blend
+  //if 1 change to darkest
+  //etc
+  if(whatBlendMode == 0)
+  {
+    currentBlendMode = 'BLEND';
+  }
+  else if(whatBlendMode == 1)
+  {
+    currentBlendMode = 'DARKEST';
+  }
+  else if(whatBlendMode == 2)
+  {
+    currentBlendMode = 'LIGHTEST';
+  }
+  else if(whatBlendMode == 3)
+  {
+    currentBlendMode = 'OVERLAY';
+  }
+  else if(whatBlendMode == 4)
+  {
+    currentBlendMode = 'HARD_LIGHT';
+  }
+  else if(whatBlendMode == 5)
+  {
+    currentBlendMode = 'SOFT_LIGHT';
+  }
+  
   emptyCanvas = true;
 }
 
 //function that generates a new canvas of art
 function generateArt()
 {
+  //random color
   let R = random(165);
   let G = random(165);
   let B = random(165);
@@ -315,18 +288,22 @@ function generateArt()
   {
 
     //set random color
-    fill(random(R, R+90), random(G, G+90), random(B, B+90));
+    fill(random(R, R+90), random(G, G+90), random(B, B+90));  
 
+    //random shape out of shapes array
     if(shapes[int(random(3))] == "rect")
     {
+      //place random rect 
       rect(random(200, 1500), random(0, 600), random(0, 100));
     }
     else if(shapes[int(random(3))] == "circle")
     {
+      //place random circle
       circle(random(200, 1500), random(0, 600), random(0, 100));
     }
     else if(shapes[int(random(3))] == "triangle")
     {
+      //place random triangle
       let x;
       let y;
     
@@ -338,9 +315,25 @@ function generateArt()
   }
 }
 
+//function that generates new pattern on canvas
 function generatePattern()
 {
-  let randomPattern = 1; //int(random(11));
+  //decide what pattern to place
+  let randomPattern = int(random(4));
+
+  //random color
+  R = random(165);
+  G = random(165);
+  B = random(165);
+
+  //fill object with random color
+  fill(random(R, R + 90), random(G, G + 90), random(B, B + 90));
+
+  //set background to a random color
+  background(random(R, R + 90), random(G, G + 90), random(B, B + 90));
+
+  //set outline/stroke to a random color
+  stroke(random(R, R + 10), random(G, G + 10), random(B, B + 10));
 
   if(randomPattern == 0)
   {
@@ -352,8 +345,9 @@ function generatePattern()
     let lineVertical = int(random(2));
     let space = random(40, 80);
   
-    for (x=200;x<width;x+=space){
-      for (y=60;y<height;y+=space){
+    //for loop generating a pattern
+    for (x=0;x<width;x+=space){
+      for (y=0;y<height;y+=space){
         if(lineHorizontal == 0)
         {
           line(x,y,x+space,y);
@@ -375,17 +369,15 @@ function generatePattern()
 
     angleMode(DEGREES);
     strokeWeight(int(random(0, 4)));
+
     startR = random(165);
     startG = random(165);
     startB = random(165);
-    background(startR + 45, startG + 45, startB + 45);
+
+    //for loop generating a pattern
     for (x = width; x > -size * widthMult; x -= size) {
       for (y = height; y > -size * heightMult; y -= size) {
-        fill(
-          random(startR, startR + 90),
-          random(startG, startG + 90),
-          random(startB, startB + 90)
-        );
+        fill(random(startR, startR + 90), random(startG, startG + 90), random(startB, startB + 90));
         push();
         translate(x + size / 2, y + size / 2);
         rect(
@@ -396,6 +388,50 @@ function generatePattern()
         );
         pop();
       }
+    }
+  }
+  else if(randomPattern == 2)
+  {
+    let size = int(random(8, 51));
+    let rez = random(0.0001, 1);
+
+    //for loop generating a pattern
+    strokeWeight(random(1, 11));
+    for(x=0;x<width;x+=size+0)
+    {
+      for (y=0;y<height;y+=size+0)
+      {
+        n = noise(x*rez,y*rez)-0.2;
+        c = random(2);
+
+        if (c<1)
+        {
+          line(x,y,x+size,y+size)
+        }
+        else
+        {
+          line(x,y+size,x+size,y)
+        }
+      }
+    }
+  }
+  else
+  {
+    let rez = random(0.01, 0.05);
+    let t = 0;
+    let space = int(random(10, 21));
+    let size = random(10, 21);
+
+    //for loop generating a pattern
+    for (i = 0; i < width; i += space) {
+      for (j = 0; j < height; j += space) {
+        var n = noise(i * rez, j * rez, t);
+        stroke(n * 255, n*255, n*255, 255);
+        strokeWeight(2);
+        //fill(n*255,n*255,n*255,255);
+        rect(i, j, size);
+      }
+      t += 0.0002;
     }
   }
 }
