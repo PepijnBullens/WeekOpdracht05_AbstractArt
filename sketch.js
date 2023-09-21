@@ -290,18 +290,20 @@ function generateArt()
     //set random color
     fill(random(R, R+90), random(G, G+90), random(B, B+90));  
 
+    let randomShape = int(random(3));
+
     //random shape out of shapes array
-    if(shapes[int(random(3))] == "rect")
+    if(shapes[randomShape] == "rect")
     {
       //place random rect 
       rect(random(200, 1500), random(0, 600), random(0, 100));
     }
-    else if(shapes[int(random(3))] == "circle")
+    else if(shapes[randomShape] == "circle")
     {
       //place random circle
       circle(random(200, 1500), random(0, 600), random(0, 100));
     }
-    else if(shapes[int(random(3))] == "triangle")
+    else if(shapes[randomShape] == "triangle")
     {
       //place random triangle
       let x;
